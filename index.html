@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakitin | Pitch Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-black: #050505;
+            --card-bg: rgba(25, 25, 25, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --accent-blue: #3B82F6;
+            --accent-purple: #8B5CF6;
+            --accent-red: #EF4444;
+            --grad-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EF4444 100%);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Slide Deck Container */
+        #deck-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        /* Slide Core */
+        .slide {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-black);
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 80px;
+            border-radius: 32px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            z-index: 2;
+        }
+
+        /* Abstract Background Decor */
+        .blob {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.15;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .blob-1 { top: -200px; right: -100px; background: var(--accent-blue); }
+        .blob-2 { bottom: -200px; left: -100px; background: var(--accent-red); }
+        .blob-3 { top: 20%; left: 30%; background: var(--accent-purple); opacity: 0.1; }
+
+        .slide > * { position: relative; z-index: 2; }
+
+        /* Typography */
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 110px;
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -4px;
+            margin-bottom: 20px;
+        }
+
+        .title-gradient {
+            background: var(--grad-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2.slide-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h2.slide-title span {
+            height: 4px;
+            width: 60px;
+            background: var(--grad-primary);
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        /* UI Elements */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: var(--glass);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            margin-bottom: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        .card i {
+            font-size: 32px;
+            margin-bottom: 20px;
+            display: block;
+            background: var(--grad-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-huge {
+            font-size: 180px;
+            font-weight: 800;
+            font-family: 'Space Grotesk';
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navigation Controls (Spotify Style) */
+        #nav-bar {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 12px 32px;
+            border-radius: 100px;
+            border: 1px solid var(--card-border);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .nav-btn.primary {
+            background: var(--text-main);
+            color: #000;
+            font-size: 20px;
+        }
+
+        .nav-btn.primary:hover {
+            transform: scale(1.1);
+            background: #fff;
+            color: #000;
+        }
+
+        #slide-indicator {
+            font-family: 'Space Grotesk';
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            z-index: 1001;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--grad-primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Tables & Charts */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+        td { background: var(--glass); padding: 25px 20px; font-size: 20px; border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+        td:first-child { border-left: 1px solid var(--card-border); border-radius: 16px 0 0 16px; font-weight: 700; }
+        td:last-child { border-right: 1px solid var(--card-border); border-radius: 0 16px 16px 0; color: var(--accent-blue); text-align: right; }
+
+        .comparison-row { display: flex; gap: 40px; flex-grow: 1; margin-top: 20px; }
+        .comp-item { flex: 1; border-radius: 32px; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+        .comp-bad { background: #111; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .comp-good { background: linear-gradient(145deg, #121212, #1a1a2e); border: 1px solid var(--accent-blue); }
+
+        .bar-group { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        .bar-wrapper { display: flex; align-items: center; gap: 20px; }
+        .bar-track { flex: 1; height: 16px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+
+    <div id="deck-container">
+        <!-- Slide 1: Hero -->
+        <section class="slide active">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-3"></div>
+            <div class="chip">The Future of Integration</div>
+            <h1>RAKITIN<br><span class="title-gradient">BUILT IN.</span></h1>
+            <p style="font-size: 32px; color: var(--text-muted); max-width: 800px; margin-top: 40px; font-weight: 300;">
+                Solving the Integration Gap for high-power, low-time individuals through results-oriented technology architecture.
+            </p>
+        </section>
+
+        <!-- Slide 2: The Problem -->
+        <section class="slide">
+            <div class="blob blob-2"></div>
+            <h2 class="slide-title"><span></span>The Integration Gap</h2>
+            <div style="display: flex; align-items: center; gap: 80px; flex-grow: 1;">
+                <div class="stat-huge">20+</div>
+                <div>
+                    <p style="font-size: 40px; font-weight: 700; line-height: 1.2;">Hours spent on research and setup per technology suite.</p>
+                    <p style="font-size: 24px; color: var(--text-muted); margin-top: 20px;">
+                        Consumers are drowning in "possibility" but suffocating from complexity. 
+                        Retailers sell bags of flour; consumers want the finished cake.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Comparison -->
+        <section class="slide">
+            <h2 class="slide-title"><span></span>Product vs. Performance</h2>
+            <div class="comparison-row">
+                <div class="comp-item comp-bad">
+                    <div>
+                        <h3 style="font-size: 32px; margin-bottom: 20px; color: var(--accent-red);"><i class="fa-solid fa-xmark"></i> Standard Retail</h3>
+                        <p style="color: var(--text-muted);">Unconnected hardware, firmware updates, manual bridging, and hours of YouTube troubleshooting.</p>
+                    </div>
+                    <div style="font-weight: 800; font-size: 40px; opacity: 0.3;">"DUMMY GOODS"</div>
+                </div>
+                <div class="comp-item comp-good">
+                    <div>
+                        <h3 style="font-size: 32px; margin-bottom: 20px; color: var(--accent-blue);"><i class="fa-solid fa-check"></i> Rakitin Solution</h3>
+                        <p>Pre-configured, task-ready suites. Architected for performance. Works the moment the box is opened.</p>
+                    </div>
+                    <div style="font-weight: 800; font-size: 40px; color: var(--accent-blue);">"READY ASSETS"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Offerings -->
+        <section class="slide">
+            <h2 class="slide-title"><span></span>Capability Clusters</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fa-solid fa-house-signal"></i>
+                    <h3 style="font-size: 24px; margin-bottom: 15px;">Lifestyle Hubs</h3>
+                    <p style="color: var(--text-muted); font-size: 16px;">Security, lighting, and climate integrated into a single, pre-programmed system.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <h3 style="font-size: 24px; margin-bottom: 15px;">Task Stations</h3>
+                    <p style="color: var(--text-muted); font-size: 16px;">Specialized rigs for architects and video editors with all software pre-vetted.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <h3 style="font-size: 24px; margin-bottom: 15px;">Care Suites</h3>
+                    <p style="color: var(--text-muted); font-size: 16px;">Smart health and safety tech for seniors with zero firmware stress.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Business Model -->
+        <section class="slide">
+            <h2 class="slide-title"><span></span>The Revenue Engine</h2>
+            <div style="margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr><th>Revenue Stream</th><th>Value Proposition</th><th>Metric</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Hardware Margin</td><td>Curated inventory</td><td>15-25%</td></tr>
+                        <tr><td>Integration Fee</td><td>Assembly & Programming</td><td>$100 - $1,500</td></tr>
+                        <tr><td>Rakitin Care</td><td>Managed support</td><td>$19/mo</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="margin-top: 30px; font-style: italic; color: var(--text-muted); text-align: center;">
+                "We aren't just selling boxes; we are selling a 'Doctor for your House'."
+            </p>
+        </section>
+
+        <!-- Slide 6: Profitability -->
+        <section class="slide">
+            <h2 class="slide-title"><span></span>Performance vs. Giants</h2>
+            <div class="bar-group" style="margin-top: 40px;">
+                <div class="bar-wrapper">
+                    <div style="width: 200px;">Rakitin</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 80%; background: var(--grad-primary);"></div></div>
+                    <div style="font-weight: 800; min-width: 100px;">22% Net</div>
+                </div>
+                <div class="bar-wrapper">
+                    <div style="width: 200px;">Retail Giants</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 15%; background: #333;"></div></div>
+                    <div style="font-weight: 800; color: var(--text-muted);">4% Net</div>
+                </div>
+            </div>
+            <div style="margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div class="card" style="border-left: 4px solid var(--accent-purple);">
+                    <h3>Break-Even</h3>
+                    <p style="font-size: 32px; font-weight: 800;">Month 14</p>
+                </div>
+                <div class="card" style="border-left: 4px solid var(--accent-blue);">
+                    <h3>Target Profit</h3>
+                    <p style="font-size: 32px; font-weight: 800;">21.3%</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Growth -->
+        <section class="slide">
+            <h2 class="slide-title"><span></span>Growth & AI Scaling</h2>
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; flex-grow: 1;">
+                <div>
+                    <p style="font-size: 24px; line-height: 1.4; margin-bottom: 20px;">
+                        Scaling via the <strong style="color: var(--accent-blue);">Rakitin Configurator</strong>—an AI engine replacing standard sales staff.
+                    </p>
+                    <div class="card" style="padding: 20px;">
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                            <li><i class="fa-solid fa-check" style="color: var(--accent-blue)"></i> 10 Experience Centers</li>
+                            <li><i class="fa-solid fa-check" style="color: var(--accent-blue)"></i> Logistics Partnership</li>
+                            <li><i class="fa-solid fa-check" style="color: var(--accent-blue)"></i> Scaled Digital Support</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card" style="text-align: center; border-color: var(--accent-purple)">
+                    <div style="font-size: 48px; margin-bottom: 10px;"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 style="font-size: 48px; font-weight: 800;">$25.7M</h3>
+                    <p style="color: var(--text-muted);">Year 3 Target</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Final Ask -->
+        <section class="slide" style="justify-content: center; align-items: center; text-align: center;">
+            <div class="blob blob-1" style="width: 800px; height: 800px; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.1;"></div>
+            <h1 style="font-size: 110px; letter-spacing: -6px;">JOIN THE<br><span class="title-gradient">ARCHITECTURE.</span></h1>
+            <p style="font-size: 28px; color: var(--text-muted); margin: 40px 0;">Help us bridge the Integration Gap.</p>
+            <div style="display: flex; gap: 20px;">
+                <div class="card" style="padding: 15px 40px; border-radius: 100px; background: #fff; color: #000; font-weight: 700;">Partner with us</div>
+            </div>
+            <p style="margin-top: 60px; text-transform: uppercase; letter-spacing: 4px; font-weight: 800; font-size: 14px; opacity: 0.4;">Rakitin | Needs Built In.</p>
+        </section>
+    </div>
+
+    <!-- Navigation Controls -->
+    <nav id="nav-bar">
+        <button class="nav-btn" onclick="changeSlide(-1)"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="nav-btn primary" id="play-btn" onclick="changeSlide(1)"><i class="fa-solid fa-play"></i></button>
+        <button class="nav-btn" onclick="changeSlide(1)"><i class="fa-solid fa-forward-step"></i></button>
+        <div id="slide-indicator">1 / 8</div>
+    </nav>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicator = document.getElementById('slide-indicator');
+        const progressBar = document.getElementById('progress-bar');
+        const playBtn = document.getElementById('play-btn');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            // Update UI
+            indicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+            
+            // Update Play button to show 'Refresh' on last slide
+            if (currentSlide === slides.length - 1) {
+                playBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
+            } else {
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            
+            if (currentSlide >= slides.length) {
+                currentSlide = 0; // Loop back
+            } else if (currentSlide < 0) {
+                currentSlide = slides.length - 1;
+            }
+            
+            updateSlide();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>
